@@ -69,6 +69,17 @@ h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
   display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px;
   font-size: 10px; color: #8B8E94;
 }
+/* 8.3단계: 카드 설명(제목 옆 회색 문구·맨 아래 각주)은 기본 숨김 - "설명 보기" 토글로만 보인다.
+   카드 제목·본문 데이터는 이 규칙과 무관하게 항상 그대로 보인다. */
+.card-note, .card-foot { display: none; }
+body.notes-on .card-note { display: inline; }
+body.notes-on .card-foot { display: flex; }
+.notes-toggle-btn {
+  font-size: 11px; font-weight: 700; color: #17181A; background: #fff;
+  border: 1px solid #E6E6E8; padding: 5px 10px; border-radius: 999px;
+  cursor: pointer; white-space: nowrap; font-family: inherit;
+}
+.notes-toggle-btn:hover { background: #F4F4F5; }
 
 /* ---------- 배지 ---------- */
 .pill-red { font-size: 11px; font-weight: 800; color: #fff; background: #EA0029;
@@ -284,7 +295,9 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
 .war-half .lab-kia { font-size: 11px; font-weight: 700; color: #EA0029; margin-bottom: 8px; }
 .war-half .lab-lg { font-size: 11px; font-weight: 700; color: #5C6066; margin-bottom: 8px; }
 
-.foot { text-align: center; font-size: 10px; color: #A9ACB1; padding-top: 8px; }
+/* 8.3단계: 한 줄로만 - 글자를 줄이고, 그래도 넘치면 줄바꿈 대신 말줄임표로 자른다 */
+.foot { text-align: center; font-size: 9px; color: #A9ACB1; padding-top: 8px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- 모바일 (시안 1b) ---------- */
 @media (max-width: 760px) {
@@ -294,6 +307,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
   .head-bar { height: 18px; width: 5px; }
   .head-top { padding-bottom: 10px; }
   .head-when { font-size: 10px; }
+  .foot { font-size: 8px; }
   .stat-strip { grid-template-columns: 1fr 1fr; }
   /* 칸이 5개라 2열에서 마지막 한 칸이 반쪽만 남는다 -> 마지막 칸만 한 줄 전체로 */
   .stat-strip .stat-cell:last-child { grid-column: 1 / -1; }
@@ -390,13 +404,30 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
     <div class="head-title">
       <span class="head-bar"></span>
       <h1>KIA 타이거즈 기록 대시보드</h1>
-      <span class="head-when">데이터 기준 2026-09-08 · 생성 2026-09-08 07:08:48 (KST)</span>
+      <span class="head-when">데이터 기준 2026-09-08</span>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;"><span class="status-ok">수집 정상 · 12/12 단계</span> · <span class="status-ok">게시 정상</span></div>
+    <div style="display:flex;gap:8px;align-items:center;"><button type="button" id="notes-toggle" class="notes-toggle-btn" onclick="toggleNotes()">설명 보기</button></div>
   </div>
   
-  <div class="stat-strip" style="margin-top:12px;"><div class="stat-cell"><div class="stat-label">순위</div><div class="stat-value num" style="color:#EA0029">4위</div></div><div class="stat-cell"><div class="stat-label">승-패-무 / 승률</div><div class="stat-value num">66-52-2 <span class="sub">.559</span></div></div><div class="stat-cell"><div class="stat-label">위·아래 팀과 게임차</div><div class="stat-value num"><span class="sub-sm">위 LG와 -0.5 · 아래 두산와 +4.5</span></div></div><div class="stat-cell"><div class="stat-label">현재 흐름</div><div class="stat-value num">3연승</div></div><div class="stat-cell"><div class="stat-label">득실차 (득점 / 실점)</div><div class="stat-value num">+83 <span class="sub-sm">654 / 571</span></div></div></div>
+  <div class="stat-strip" style="margin-top:12px;"><div class="stat-cell"><div class="stat-label">순위</div><div class="stat-value num" style="color:#EA0029">4위</div></div><div class="stat-cell"><div class="stat-label">승-패-무 / 승률</div><div class="stat-value num">66-52-2 <span class="sub">.559</span></div></div><div class="stat-cell"><div class="stat-label">위·아래 팀과 게임차</div><div class="stat-value num"><span class="sub-sm">위 LG와 -0.5 · 아래 두산과 +4.5</span></div></div><div class="stat-cell"><div class="stat-label">현재 흐름</div><div class="stat-value num">3연승</div></div><div class="stat-cell"><div class="stat-label">득실차 (득점 / 실점)</div><div class="stat-value num">+83 <span class="sub-sm">654 / 571</span></div></div></div>
 </header>
+<script>
+(function () {
+  function apply(on) {
+    document.body.classList.toggle('notes-on', on);
+    var b = document.getElementById('notes-toggle');
+    if (b) b.textContent = on ? '설명 숨기기' : '설명 보기';
+  }
+  window.toggleNotes = function () {
+    var on = !document.body.classList.contains('notes-on');
+    apply(on);
+    try { localStorage.setItem('kia2026-notes', on ? '1' : '0'); } catch (e) {}
+  };
+  var on = false;
+  try { on = localStorage.getItem('kia2026-notes') === '1'; } catch (e) {}
+  apply(on);
+})();
+</script>
 
 <section class="hero">
   <div class="hero-head">
