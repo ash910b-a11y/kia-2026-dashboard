@@ -43,6 +43,21 @@ h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
   padding: 3px 7px; border-radius: 4px;
 }
 .warn-text { font-size: 13px; color: #8A1024; }
+/* 8.4단계: "이 화면 오래됨" 알림 - warn-box(빨강, 수집·게시 실패용)와 구분되는 노란 띠.
+   판정은 보는 쪽 브라우저의 JS가 한다(header의 data-base-date 참고, sections.py). */
+.stale-box {
+  display: flex; align-items: center; gap: 10px; background: #FFF8E1;
+  border: 1px solid #F0D98C; border-left: 4px solid #C9971F;
+  border-radius: 8px; padding: 11px 14px; margin-top: 12px; flex-wrap: wrap;
+}
+/* [hidden] 기본 규칙(display:none)은 브라우저 UA 스타일이라, 위 .stale-box의 display:flex
+   (같은 우선순위의 저자 스타일)에 밀려 무시된다 - hidden 속성이 있을 때는 확실히 숨긴다. */
+.stale-box[hidden] { display: none; }
+.stale-tag {
+  font-size: 11px; font-weight: 800; color: #fff; background: #C9971F;
+  padding: 3px 7px; border-radius: 4px;
+}
+.stale-text { font-size: 13px; color: #7A5B00; }
 .stat-strip {
   display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
   background: #E6E6E8; border: 1px solid #E6E6E8; border-radius: 10px; overflow: hidden;
@@ -70,10 +85,13 @@ h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
   font-size: 10px; color: #8B8E94;
 }
 /* 8.3단계: 카드 설명(제목 옆 회색 문구·맨 아래 각주)은 기본 숨김 - "설명 보기" 토글로만 보인다.
-   카드 제목·본문 데이터는 이 규칙과 무관하게 항상 그대로 보인다. */
-.card-note, .card-foot { display: none; }
+   카드 제목·본문 데이터는 이 규칙과 무관하게 항상 그대로 보인다.
+   8.4단계: 카드 본문에 직접 박힌 설명성 문구(.ps-warn 등)도 .explain-note로 묶어서 같이 토글한다
+   ("규정타석 48명 중" 같은 데이터 단위 주석은 .explain-note를 안 붙였으니 그대로 보인다). */
+.card-note, .card-foot, .explain-note { display: none; }
 body.notes-on .card-note { display: inline; }
 body.notes-on .card-foot { display: flex; }
+body.notes-on .explain-note { display: block; }
 .notes-toggle-btn {
   font-size: 11px; font-weight: 700; color: #17181A; background: #fff;
   border: 1px solid #E6E6E8; padding: 5px 10px; border-radius: 999px;
@@ -134,6 +152,13 @@ body.notes-on .card-foot { display: flex; }
              padding: 10px 14px; flex-wrap: wrap; }
 .split-box b { color: #17181A; }
 .split-sep { width: 1px; height: 14px; background: #DCDCDE; }
+.split-line { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+/* 8.4단계: 720px 아래에서는 홈/원정이 항상 두 줄로 쌓인다(어중간하게 값 중간에서
+   줄바꿈되던 것을 막는다) - 데스크톱은 위 .split-box 규칙대로 한 줄. */
+@media (max-width: 720px) {
+  .split-box { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .split-sep { display: none; }
+}
 .spark-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #7C7F85; }
 
 /* ---------- 강약 프로필 (8.1단계) ---------- */
@@ -208,6 +233,12 @@ body.notes-on .card-foot { display: flex; }
 /* ---------- 2열 배치 ---------- */
 .row-2 { display: grid; grid-template-columns: 0.78fr 1.22fr; gap: 18px; align-items: start; }
 .row-half { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* 8.4단계: grid item은 기본이 min-width:auto라서, 안에 `.tbl-wrap style="min-width:560px"`
+   같은 표가 있으면 그 폭이 트랙 크기에 그대로 반영돼(grid blowout) 모바일 한 열로 접힐 때도
+   카드가 화면 밖까지 넓어진다("박재현 카드가 아래 카드들보다 좁아 보인다"의 실제 원인 -
+   좁은 게 아니라 다음 경기·순위 경쟁 카드가 넘쳐서 상대적으로 좁아 보인 것). min-width:0으로
+   내용에 맞춰 줄어들게 하고, 안의 `.tbl-wrap`이 자기 폭 안에서 가로 스크롤을 대신 맡는다. */
+.row-2 > *, .row-half > * { min-width: 0; }
 
 /* ---------- 다음 경기 ---------- */
 .next-vs { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
@@ -399,7 +430,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
 <body>
 <div class="page">
 
-<header>
+<header data-base-date="2026-09-08" data-offseason="0">
   <div class="head-top">
     <div class="head-title">
       <span class="head-bar"></span>
@@ -411,6 +442,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
   
   <div class="stat-strip" style="margin-top:12px;"><div class="stat-cell"><div class="stat-label">순위</div><div class="stat-value num" style="color:#EA0029">4위</div></div><div class="stat-cell"><div class="stat-label">승-패-무 / 승률</div><div class="stat-value num">66-52-2 <span class="sub">.559</span></div></div><div class="stat-cell"><div class="stat-label">위·아래 팀과 게임차</div><div class="stat-value num"><span class="sub-sm">위 LG와 -0.5 · 아래 두산과 +4.5</span></div></div><div class="stat-cell"><div class="stat-label">현재 흐름</div><div class="stat-value num">3연승</div></div><div class="stat-cell"><div class="stat-label">득실차 (득점 / 실점)</div><div class="stat-value num">+83 <span class="sub-sm">654 / 571</span></div></div></div>
 </header>
+<div id="stale-banner" class="stale-box" hidden><span class="stale-tag">알림</span><span class="stale-text" id="stale-text"></span></div>
 <script>
 (function () {
   function apply(on) {
@@ -426,6 +458,23 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
   var on = false;
   try { on = localStorage.getItem('kia2026-notes') === '1'; } catch (e) {}
   apply(on);
+})();
+</script>
+<script>
+(function () {
+  var header = document.querySelector('header[data-base-date]');
+  var banner = document.getElementById('stale-banner');
+  if (!header || !banner || header.getAttribute('data-offseason') === '1') return;
+  var base = new Date(header.getAttribute('data-base-date') + 'T00:00:00');
+  if (isNaN(base.getTime())) return;
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var diffDays = Math.round((today - base) / 86400000);
+  if (diffDays >= 2) {
+    document.getElementById('stale-text').textContent =
+      '이 화면은 ' + diffDays + '일 전 데이터입니다. 수집 PC가 꺼져 있을 수 있습니다.';
+    banner.hidden = false;
+  }
 })();
 </script>
 
@@ -493,7 +542,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
       <div class="sec-label" style="margin-bottom:10px;">최근 출전 (9/6 · KT)</div>
       <div class="minigrid c6" style="margin-bottom:0;"><div class="minicell center"><div class="lab">타수-안타</div><div class="val num">4-2</div></div><div class="minicell center"><div class="lab">홈런</div><div class="val num red">0</div></div><div class="minicell center"><div class="lab">타점</div><div class="val num">0</div></div><div class="minicell center"><div class="lab">볼넷</div><div class="val num">1</div></div><div class="minicell center"><div class="lab">삼진</div><div class="val num">0</div></div><div class="minicell center"><div class="lab">도루</div><div class="val num">0</div></div></div>
     </div>
-    <div class="split-box"><b>홈</b><span class="num">.266 · 9홈런 · OPS .771</span><span class="split-sep"></span><b>원정</b><span class="num">.312 · 6홈런 · OPS .806</span></div>
+    <div class="split-box"><span class="split-line"><b>홈</b><span class="num">.266 · 9홈런 · OPS .771</span></span><span class="split-sep"></span><span class="split-line"><b>원정</b><span class="num">.312 · 6홈런 · OPS .806</span></span></div>
     <div>
       <div class="spark-title">최근 10경기 타율 추이</div>
       <div style="height:120px; width:100%;">                            <div id="pjh-recent10" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("pjh-recent10")) {                    Plotly.newPlot(                        "pjh-recent10",                        [{"hovertemplate":"%{x|%m.%d} \u00b7 %{y:.3f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#EA0029","width":2},"marker":{"color":"#EA0029","size":3},"mode":"lines+markers","x":["2026-03-28T00:00:00.000000","2026-03-29T00:00:00.000000","2026-04-01T00:00:00.000000","2026-04-02T00:00:00.000000","2026-04-04T00:00:00.000000","2026-04-05T00:00:00.000000","2026-04-07T00:00:00.000000","2026-04-08T00:00:00.000000","2026-04-10T00:00:00.000000","2026-04-11T00:00:00.000000","2026-04-12T00:00:00.000000","2026-04-14T00:00:00.000000","2026-04-15T00:00:00.000000","2026-04-16T00:00:00.000000","2026-04-17T00:00:00.000000","2026-04-18T00:00:00.000000","2026-04-19T00:00:00.000000","2026-04-21T00:00:00.000000","2026-04-23T00:00:00.000000","2026-04-24T00:00:00.000000","2026-04-25T00:00:00.000000","2026-04-26T00:00:00.000000","2026-04-28T00:00:00.000000","2026-04-29T00:00:00.000000","2026-04-30T00:00:00.000000","2026-05-01T00:00:00.000000","2026-05-02T00:00:00.000000","2026-05-03T00:00:00.000000","2026-05-05T00:00:00.000000","2026-05-06T00:00:00.000000","2026-05-07T00:00:00.000000","2026-05-08T00:00:00.000000","2026-05-09T00:00:00.000000","2026-05-10T00:00:00.000000","2026-05-12T00:00:00.000000","2026-05-13T00:00:00.000000","2026-05-14T00:00:00.000000","2026-05-15T00:00:00.000000","2026-05-16T00:00:00.000000","2026-05-17T00:00:00.000000","2026-05-19T00:00:00.000000","2026-05-22T00:00:00.000000","2026-05-23T00:00:00.000000","2026-05-24T00:00:00.000000","2026-05-26T00:00:00.000000","2026-05-27T00:00:00.000000","2026-05-28T00:00:00.000000","2026-05-29T00:00:00.000000","2026-05-30T00:00:00.000000","2026-05-31T00:00:00.000000","2026-06-02T00:00:00.000000","2026-06-03T00:00:00.000000","2026-06-04T00:00:00.000000","2026-06-05T00:00:00.000000","2026-06-06T00:00:00.000000","2026-06-07T00:00:00.000000","2026-06-09T00:00:00.000000","2026-06-10T00:00:00.000000","2026-06-11T00:00:00.000000","2026-06-12T00:00:00.000000","2026-06-13T00:00:00.000000","2026-06-14T00:00:00.000000","2026-06-16T00:00:00.000000","2026-06-17T00:00:00.000000","2026-06-18T00:00:00.000000","2026-06-19T00:00:00.000000","2026-06-20T00:00:00.000000","2026-06-21T00:00:00.000000","2026-06-23T00:00:00.000000","2026-06-24T00:00:00.000000","2026-06-25T00:00:00.000000","2026-06-26T00:00:00.000000","2026-06-27T00:00:00.000000","2026-06-28T00:00:00.000000","2026-06-30T00:00:00.000000","2026-07-01T00:00:00.000000","2026-07-02T00:00:00.000000","2026-07-03T00:00:00.000000","2026-07-04T00:00:00.000000","2026-07-07T00:00:00.000000","2026-07-08T00:00:00.000000","2026-07-09T00:00:00.000000","2026-07-16T00:00:00.000000","2026-07-17T00:00:00.000000","2026-07-19T00:00:00.000000","2026-07-21T00:00:00.000000","2026-07-22T00:00:00.000000","2026-07-23T00:00:00.000000","2026-07-24T00:00:00.000000","2026-07-25T00:00:00.000000","2026-07-26T00:00:00.000000","2026-07-28T00:00:00.000000","2026-07-29T00:00:00.000000","2026-07-30T00:00:00.000000","2026-07-31T00:00:00.000000","2026-08-11T00:00:00.000000","2026-08-12T00:00:00.000000","2026-08-13T00:00:00.000000","2026-08-14T00:00:00.000000","2026-08-15T00:00:00.000000","2026-08-16T00:00:00.000000","2026-08-18T00:00:00.000000","2026-08-19T00:00:00.000000","2026-08-20T00:00:00.000000","2026-08-21T00:00:00.000000","2026-08-22T00:00:00.000000","2026-08-23T00:00:00.000000","2026-08-25T00:00:00.000000","2026-08-29T00:00:00.000000","2026-09-01T00:00:00.000000","2026-09-02T00:00:00.000000","2026-09-04T00:00:00.000000","2026-09-05T00:00:00.000000","2026-09-06T00:00:00.000000"],"y":{"dtype":"f8","bdata":"AAAAAAAA+H8AAAAAAAD4fwAAAAAAAPh\u002fAAAAAAAA+H8AAAAAAAD4fwAAAAAAANA\u002fkiRJkiRJ0j9VVVVVVVXVP7dt27Zt29Y\u002fOY7jOI7j2D9GF1100UXXPwrXo3A9Ctc\u002ffBphuacR1j+llFJKKaXUP9RBHdRBHdQ\u002fFl\u002fxFV\u002fx1T9vMEU+6wbTP8IU+awbTNE\u002fAAAAAAAA0D8d1EEd1EHNPx4eHh4eHs4\u002fHMdxHMdxzD\u002fQusEU+azLPyxRuxK1K9E\u002fAAAAAAAA0D\u002fNzMzMzMzMP1VVVVVVVdU\u002fXkN5DeU11D8YhmEYhmHYP5U1ZU1ZU9Y\u002fVVVVVVVV1T\u002f6GJyPwfnYP4nalahdido\u002fGqRBGqRB2j\u002fNzMzMzMzcPzMzMzMzM9s\u002fS9SuRO1K1D+3bdu2bdvWP7sStStRu9I\u002fU9aUNWVN2T9T1pQ1ZU3ZP1VVVVVVVdU\u002f9DzP8zzP0z8xDMMwDMPQP57neZ7nec4\u002fkiRJkiRJ0j\u002f0PM\u002fzPM\u002fTP5qZmZmZmdE\u002fmpmZmZmZ0T8apEEapEHKPzgfg\u002fMxOM8\u002fnud5nud5zj8ZnI\u002fB+RjMPzgfg\u002fMxOM8\u002f27Zt27Ztyz82ZU1ZU9bEPxQ7sRM7scM\u002fZmZmZmZmxj8UO7ETO7HDPyivobyG8ro\u002fHh4eHh4erj8eHh4eHh6uPwgffPDBB68\u002fCB988MEHrz8AAAAAAADEPwAAAAAAAMg\u002f0LrBFPmsyz+QBmmQBmnQPzgfg\u002fMxOM8\u002fkiRJkiRJ0j84velNb3rTP05vetOb3tQ\u002fUt\u002fZqO9s1D9Ob3rTm97UPzi96U1vetM\u002fUt\u002fZqO9s1D+UPumTPunTP7sStStRu9I\u002fl2\u002f5lm\u002f51j8cTJHPusHUP2wor6G8htI\u002fXkN5DeU11D9eQ3kN5TXUP15DeQ3lNdQ\u002fkiRJkiRJ0j\u002fx8PDw8PDQPwgffPDBB88\u002f55xzzjnnzD8nm2yyySbLP\u002fHw8PDw8NA\u002f09LS0tLS0j\u002fUQR3UQR3UP8ln3WCKfNY\u002fFDuxEzux0z+SJEmSJEnSP5qZmZmZmdE\u002fVVVVVVVV1T9XEJMriMnVP0yuICZXENM\u002fq6qqqqqq0j9MriAmVxDTP0d9Z6O+s9E\u002fIQtZyEIW0j84velNb3rTPwAAAAAAANg\u002f4eUUvJyC1z\u002fh5RS8nILXP431obE+NNY\u002fNNaHxvrQ2D8AAAAAAADYP6uqqqqqqtY\u002fVVVVVVVV1T9MriAmVxDTP05vetOb3tQ\u002f"},"type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05}}},"margin":{"l":40,"r":12,"t":8,"b":24},"font":{"size":11,"color":"#5C6066"},"height":120,"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)","showlegend":false,"hovermode":"closest","xaxis":{"showgrid":false,"zeroline":false,"linecolor":"#F0F0F1"},"yaxis":{"showgrid":true,"gridcolor":"#F0F0F1","zeroline":false,"linecolor":"#F0F0F1","tickformat":".3f","range":[0.15,0.45]}},                        {"responsive": true, "displayModeBar": false}                    )                };            </script>        </div>
