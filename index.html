@@ -306,6 +306,17 @@ table.t td.name { font-weight: 700; }
 .starter-card .nm { font-size: 12px; font-weight: 800; }
 .starter-card .ln { font-size: 11px; color: #5C6066; margin-bottom: 4px; }
 
+/* ---------- 관심 투수 (8.6단계) ---------- */
+.fp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.fp-card { border: 1px solid #E6E6E8; border-radius: 10px; padding: 14px 16px; }
+.fp-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.fp-name { font-size: 15px; font-weight: 800; }
+.fp-sub { margin-bottom: 10px; }
+.fp-line { font-size: 12px; color: #3F4247; line-height: 1.7; padding-bottom: 10px;
+           border-bottom: 1px dashed #DCDCDE; margin-bottom: 8px; }
+.fp-split { font-size: 12px; color: #3F4247; margin-bottom: 4px; }
+.fp-sub-lab { font-size: 10px; font-weight: 700; color: #8B8E94; margin: 10px 0 4px; }
+
 /* ---------- 히트맵 ---------- */
 table.heat { border-collapse: collapse; font-size: 12px; width: 100%; min-width: 480px; }
 table.heat th { font-size: 10px; font-weight: 700; color: #8B8E94; padding: 0 0 7px;
@@ -350,6 +361,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
   .row-2, .row-half { grid-template-columns: 1fr; }
   .spark-grid { grid-template-columns: repeat(2, 1fr); }
   .starter-grid { grid-template-columns: 1fr; }
+  .fp-grid { grid-template-columns: 1fr; }
   /* 표는 가로 스크롤 + 앞 두 컬럼(선수·등급) 고정 (시안 1c) */
   table.t th:nth-child(1), table.t td:nth-child(1) {
     position: sticky; left: 0; z-index: 2; background: #fff;
@@ -546,6 +558,41 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
     </div>
     </div>
   </div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <div><span class="card-title">관심 투수</span> <span class="card-note">최근 30일 등판으로 역할 판정 · ERA 순위는 규정이닝 충족자만</span></div>
+    <div></div>
+  </div>
+  <div class="fp-grid">
+    <div class="fp-card">
+      <div class="fp-head"><span class="fp-name">양현종</span><span class="pill-ink">선발</span></div>
+      <div class="fp-sub tiny-grey">투수</div>
+      <div class="fp-line">ERA 4.25 · 10승 6패 · 0세이브 · 0홀드 · 106이닝 · 70탈삼진 · 53볼넷 · WHIP 1.44</div>
+      <div class="fp-split">선발 22경기 ERA 4.25 (106이닝, 70/53)</div>
+      <div class="fp-sub-lab">최근 5경기</div><table class="rot-table"><thead><tr><th>날짜</th><th>상대</th><th>역할</th><th>이닝</th><th>자책</th><th>결과</th></tr></thead><tbody><tr><td>09.05</td><td>KT</td><td>선발</td><td>5</td><td>3</td><td>승</td></tr><tr><td>08.21</td><td>키움</td><td>선발</td><td>5 1/3</td><td>1</td><td>승</td></tr><tr><td>08.15</td><td>두산</td><td>선발</td><td>6</td><td>1</td><td>승</td></tr><tr><td>07.31</td><td>NC</td><td>선발</td><td>1 1/3</td><td>7</td><td>패</td></tr><tr><td>07.25</td><td>키움</td><td>선발</td><td>5</td><td>3</td><td>승</td></tr></tbody></table>
+      <div class="ms-box"><div class="ms-box-lab">기록 도전</div>
+    <div class="ms-row">
+      <div class="ms-head">
+        <span class="ms-label">양현종 통산 200승</span>
+        <span class="ms-val num">196 <span class="ms-target">/ 200</span></span>
+      </div>
+      <div class="ms-track"><div class="ms-fill" style="width:98.0%"></div></div>
+      <div class="ms-foot"><span class="tag-box">어려움 · 14%</span><span class="tiny-grey">4승 남음 · 선발 약 9회 필요 (올 시즌 남은 5회) · 다음 시즌 초 유력</span></div>
+    </div></div>
+      <div class="next-list"><div class="line"><span class="k">다음 등판 예상</span><span class="v">09/11 vs SSG <span class="tag-box">추정</span></span></div></div>
+    </div>
+    <div class="fp-card">
+      <div class="fp-head"><span class="fp-name">이의리</span><span class="pill-red">마무리</span></div>
+      <div class="fp-sub tiny-grey">투수</div>
+      <div class="fp-line">ERA 7.52 · 2승 8패 · 4세이브 · 1홀드 · 52 2/3이닝 · 58탈삼진 · 45볼넷 · WHIP 1.86</div>
+      <div class="fp-split">선발 10경기 ERA 9.42 (35 1/3이닝, 39/33)</div><div class="fp-split">구원 16경기 ERA 3.63 (17 1/3이닝, 19/12)</div>
+      <div class="fp-sub-lab">최근 5경기</div><table class="rot-table"><thead><tr><th>날짜</th><th>상대</th><th>역할</th><th>이닝</th><th>자책</th><th>결과</th></tr></thead><tbody><tr><td>09.06</td><td>KT</td><td>구원</td><td>1</td><td>0</td><td>-</td></tr><tr><td>09.04</td><td>KT</td><td>구원</td><td>1</td><td>1</td><td>-</td></tr><tr><td>09.02</td><td>NC</td><td>구원</td><td>2/3</td><td>1</td><td>패</td></tr><tr><td>08.29</td><td>SSG</td><td>구원</td><td>1</td><td>0</td><td>-</td></tr><tr><td>08.23</td><td>키움</td><td>구원</td><td>1/3</td><td>3</td><td>패</td></tr></tbody></table>
+      
+      
+    </div></div>
+  <div class="card-foot">선발/구원 분리 ERA·다음 등판 예상 계산 방법은 notes/stats_glossary.md 참고</div>
 </section>
 <div class="row-2">
 <section class="card">
