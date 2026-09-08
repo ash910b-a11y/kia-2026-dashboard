@@ -73,6 +73,10 @@ h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
 .card {
   background: #fff; border: 1px solid #E6E6E8; border-radius: 10px;
   padding: 18px 20px; box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  /* 8.5단계: 카드가 어떤 컨테이너(grid든 flex든)에 들어가도 min-width:auto 기본값 때문에
+     안의 넓은 표에 밀려 커지지 않도록 원천 차단한다(8.4단계 .row-2/.row-half 대응의 일반화).
+     실제 스크롤은 카드 안의 .tbl-wrap이 맡는다. */
+  min-width: 0;
 }
 .card-head {
   display: flex; align-items: center; justify-content: space-between;
@@ -108,6 +112,8 @@ body.notes-on .explain-note { display: block; }
              border: 1px solid #D3E2F0; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
 .tag-rank { font-size: 10px; color: #7C7F85; background: #F2F3F5;
             padding: 2px 5px; border-radius: 3px; white-space: nowrap; }
+/* 8.5단계: 강약 프로필 막대 대신 시즌 누적 숫자 아래에 붙는 순위 칩 - 살짝 띄운다 */
+.big3 .tag-rank, .minicell .tag-rank { display: inline-block; margin-top: 4px; }
 .tag-box { font-size: 11px; color: #3F4247; background: #F4F4F5; border: 1px solid #E6E6E8;
            border-radius: 6px; padding: 4px 9px; white-space: nowrap; }
 .tag-est { font-size: 11px; color: #B0862A; background: #FDF6E6; border: 1px solid #F0E0B8;
@@ -160,16 +166,6 @@ body.notes-on .explain-note { display: block; }
   .split-sep { display: none; }
 }
 .spark-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #7C7F85; }
-
-/* ---------- 강약 프로필 (8.1단계) ---------- */
-.profile-box { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #DCDCDE; }
-.profile-box-lab { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #7C7F85;
-                    margin-bottom: 9px; }
-.profile-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-.profile-lab { font-size: 11px; color: #8B8E94; width: 42px; flex: 0 0 42px; }
-.profile-track { flex: 1 1 auto; height: 8px; border-radius: 4px; background: #ECECEE; overflow: hidden; }
-.profile-fill { height: 100%; border-radius: 4px; background: #EA0029; }
-.profile-val { font-size: 11px; font-weight: 700; width: 24px; flex: 0 0 24px; text-align: right; }
 
 /* ---------- 마일스톤 (10a단계) ---------- */
 .ms-box { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #DCDCDE; }
@@ -430,7 +426,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
 <body>
 <div class="page">
 
-<header data-base-date="2026-09-08" data-offseason="0">
+<header data-base-date="2026-09-08" data-offseason="0" data-stale-days="2">
   <div class="head-top">
     <div class="head-title">
       <span class="head-bar"></span>
@@ -470,7 +466,8 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
   var today = new Date();
   today.setHours(0, 0, 0, 0);
   var diffDays = Math.round((today - base) / 86400000);
-  if (diffDays >= 2) {
+  var threshold = parseInt(header.getAttribute('data-stale-days'), 10) || 2;
+  if (diffDays >= threshold) {
     document.getElementById('stale-text').textContent =
       '이 화면은 ' + diffDays + '일 전 데이터입니다. 수집 PC가 꺼져 있을 수 있습니다.';
     banner.hidden = false;
@@ -490,19 +487,19 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
     <div class="hero-left">
     <div class="sec-label">시즌 누적</div>
     <div class="big3">
-      <div><div class="lab">타율</div><div class="val red num">.290</div></div>
-      <div><div class="lab">홈런</div><div class="val num">15</div></div>
-      <div><div class="lab">타점</div><div class="val num">62</div></div>
+      <div><div class="lab">타율</div><div class="val red num">.290</div><span class="tag-rank">21위/48명</span></div>
+      <div><div class="lab">홈런</div><div class="val num">15</div><span class="tag-rank">17위/48명</span></div>
+      <div><div class="lab">타점</div><div class="val num">62</div><span class="tag-rank">21위/48명</span></div>
     </div>
     <div class="minigrid c4">
-      <div class="minicell"><div class="lab">안타</div><div class="val num">128</div></div>
-      <div class="minicell"><div class="lab">득점</div><div class="val num">69</div></div>
+      <div class="minicell"><div class="lab">안타</div><div class="val num">128</div><span class="tag-rank">14위/48명</span></div>
+      <div class="minicell"><div class="lab">득점</div><div class="val num">69</div><span class="tag-rank">14위/48명</span></div>
       <div class="minicell"><div class="lab">도루</div><div class="val num">19</div></div>
-      <div class="minicell"><div class="lab">득점권 타율</div><div class="val num">.356</div></div>
+      <div class="minicell"><div class="lab">득점권 타율</div><div class="val num">.356</div><span class="tag-rank">11위/48명</span></div>
     </div>
     
-    <div class="rate-row"><div class="rate-item"><span class="lab">OPS</span><span class="val num">.787</span><span class="tag-rank">27위/48명</span> <span class="tag-rank">상위 56%</span></div><div class="rate-item"><span class="lab">WAR</span><span class="val num">1.64</span><span class="tag-rank">리그 40위/349명</span> <span class="tag-rank">상위 11%</span></div><div class="rate-item"><span class="lab">출루 / 장타</span><span class="val num">.328 / .459</span></div><div class="rate-item"><span class="lab">BABIP</span><span class="val num">.337</span> <span class="tiny-grey">(리그 .317)</span></div></div>
-    <div class="profile-box"><div class="profile-box-lab">강약 프로필<span class="tiny-grey"> · 100이 리그 최고 (규정타석 48명 중)</span></div><div class="profile-row"><span class="profile-lab">타율</span><div class="profile-track"><div class="profile-fill" style="width:58.3%"></div></div><span class="profile-val num">58</span></div><div class="profile-row"><span class="profile-lab">출루율</span><div class="profile-track"><div class="profile-fill" style="width:12.5%"></div></div><span class="profile-val num">12</span></div><div class="profile-row"><span class="profile-lab">장타율</span><div class="profile-track"><div class="profile-fill" style="width:62.5%"></div></div><span class="profile-val num">62</span></div><div class="profile-row"><span class="profile-lab">OPS</span><div class="profile-track"><div class="profile-fill" style="width:45.8%"></div></div><span class="profile-val num">46</span></div><div class="profile-row"><span class="profile-lab">홈런</span><div class="profile-track"><div class="profile-fill" style="width:66.7%"></div></div><span class="profile-val num">67</span></div><div class="profile-row"><span class="profile-lab">타점</span><div class="profile-track"><div class="profile-fill" style="width:58.3%"></div></div><span class="profile-val num">58</span></div></div>
+    <div class="rate-row"><div class="rate-item"><span class="lab">OPS</span><span class="val num">.787</span><span class="tag-rank">27위/48명</span></div><div class="rate-item"><span class="lab">WAR</span><span class="val num">1.64</span><span class="tag-rank">리그 40위/349명</span></div><div class="rate-item"><span class="lab">출루 / 장타</span><span class="val num">.328 / .459</span></div><div class="rate-item"><span class="lab">BABIP</span><span class="val num">.337</span> <span class="tiny-grey">(리그 .317)</span></div></div>
+    <div class="explain-note tiny-grey" style="margin-top:12px;">순위는 규정타석 충족 48명 기준, WAR만 리그 전체</div>
     <div class="ms-box"><div class="ms-box-lab">기록 도전</div>
     <div class="ms-row">
       <div class="ms-head">
@@ -729,13 +726,13 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
         </div>
         <div class="war-half">
           <div class="lab-kia">KIA 투수 TOP 10 <span class="tiny-grey">번호 = 리그 순위 (289명 중)</span></div>
-          <table class="t"><tbody><tr><td class='l num' style='width:30px;color:#8B8E94'>2</td><td class='l name'>올러 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.66</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>6</td><td class='l name'>네일 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.46</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>45</td><td class='l name'>시라카와 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.78</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>58</td><td class='l name'>전상현 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.55</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>58</td><td class='l name'>양현종 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.55</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>61</td><td class='l name'>성영탁 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.54</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>67</td><td class='l name'>조상우 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.46</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>70</td><td class='l name'>곽도규 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.41</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>76</td><td class='l name'>이태양 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.36</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>119</td><td class='l name'>홍민규 <span class="tiny-grey">실제</span></td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.11</td></tr></tbody></table>
+          <table class="t"><tbody><tr><td class='l num' style='width:30px;color:#8B8E94'>2</td><td class='l name'>올러</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.66</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>6</td><td class='l name'>네일</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.46</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>45</td><td class='l name'>시라카와</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.78</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>58</td><td class='l name'>전상현</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.55</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>58</td><td class='l name'>양현종</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.55</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>61</td><td class='l name'>성영탁</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.54</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>67</td><td class='l name'>조상우</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.46</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>70</td><td class='l name'>곽도규</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.41</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>76</td><td class='l name'>이태양</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.36</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>119</td><td class='l name'>홍민규</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>0.11</td></tr></tbody></table>
         </div>
         <div class="war-half">
           <div class="lab-lg">리그 투수 TOP 10</div>
           <table class="t"><tbody><tr><td class='l num' style='width:30px;color:#8B8E94'>1</td><td class='l name'>곽빈</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>4.84</td></tr><tr class="kia"><td class='l num' style='width:30px;color:#8B8E94'>2</td><td class='l name'>올러</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.66</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>3</td><td class='l name'>고영표</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.62</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>4</td><td class='l name'>류현진</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.54</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>5</td><td class='l name'>원태인</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.48</td></tr><tr class="kia"><td class='l num' style='width:30px;color:#8B8E94'>6</td><td class='l name'>네일</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.46</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>7</td><td class='l name'>벤자민</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.35</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>8</td><td class='l name'>비슬리</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.17</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>9</td><td class='l name'>알칸타라</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.11</td></tr><tr><td class='l num' style='width:30px;color:#8B8E94'>10</td><td class='l name'>최민석</td><td class='l sec'>투수</td><td class='num' style='font-weight:800'>3.00</td></tr></tbody></table>
         </div></div>
-  <div class="card-foot">KIA 투수 옆 회색 글씨는 선발/구원 판정을 경기별 기록으로 한 '실제'인지 이닝÷등판으로 한 '근사'인지 · 계산 방법과 한계는 notes/war.md</div>
+  <div class="card-foot">KIA 투수는 실제 등판 기록, 타 팀은 이닝 기준 근사로 선발/구원 구분 · 계산 방법과 한계는 notes/war.md</div>
 </section>
 
 <section class="card">
