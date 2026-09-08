@@ -127,6 +127,14 @@ body.notes-on .explain-note { display: block; }
              background: #EA0029; padding: 12px 20px; gap: 12px; flex-wrap: wrap; }
 .hero-name { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.01em; }
 .hero-sub { font-size: 12px; color: #FFD3DB; }
+/* 8.7단계: 선수 사진(약 72px, 둥근 사각형) - 실패하면 등번호로 바뀐다(onerror가 인라인
+   style을 직접 건드리므로 [hidden] 관련 CSS 우선순위 문제가 안 생긴다). */
+.hero-photo-wrap { width: 72px; height: 72px; flex: 0 0 72px; align-self: center; }
+.hero-photo { width: 72px; height: 72px; border-radius: 14px; object-fit: cover; display: block; }
+.hero-photo-fallback {
+  width: 72px; height: 72px; border-radius: 14px; background: rgba(255,255,255,.18);
+  color: #fff; font-size: 26px; font-weight: 800; align-items: center; justify-content: center;
+}
 .hero-today-pill { font-size: 11px; font-weight: 700; color: #EA0029; background: #fff;
                    padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
 .hero-body { display: grid; grid-template-columns: 1.15fr 1fr; }
@@ -311,6 +319,13 @@ table.t td.name { font-weight: 700; }
 .fp-card { border: 1px solid #E6E6E8; border-radius: 10px; padding: 14px 16px; }
 .fp-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
 .fp-name { font-size: 15px; font-weight: 800; }
+/* 8.7단계: 관심 투수 사진(약 48px) - 박재현 카드보다 작게, 카드 배경이 흰색이라 회색 배경 */
+.fp-photo-wrap { width: 48px; height: 48px; flex: 0 0 48px; }
+.fp-photo { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; display: block; }
+.fp-photo-fallback {
+  width: 48px; height: 48px; border-radius: 10px; background: #F4F4F5;
+  color: #7C7F85; font-size: 16px; font-weight: 800; align-items: center; justify-content: center;
+}
 .fp-sub { margin-bottom: 10px; }
 .fp-line { font-size: 12px; color: #3F4247; line-height: 1.7; padding-bottom: 10px;
            border-bottom: 1px dashed #DCDCDE; margin-bottom: 8px; }
@@ -490,6 +505,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
 <section class="hero">
   <div class="hero-head">
     <div class="head-title">
+      <span class="hero-photo-wrap"><img class="hero-photo" src="https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/55636.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span class="hero-photo-fallback" style="display:none">15</span></span>
       <span class="hero-name">박재현</span>
       <span class="hero-sub">외야수 · No.15 · 우투좌타 · 19세</span>
     </div>
@@ -515,11 +531,19 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
     <div class="ms-box"><div class="ms-box-lab">기록 도전</div>
     <div class="ms-row">
       <div class="ms-head">
-        <span class="ms-label">박재현 20도루</span>
-        <span class="ms-val num">19 <span class="ms-target">/ 20</span></span>
+        <span class="ms-label">박재현 20홈런</span>
+        <span class="ms-val num">16 <span class="ms-target">/ 20</span></span>
       </div>
-      <div class="ms-track"><div class="ms-fill" style="width:95.0%"></div></div>
-      <div class="ms-foot"><span class="tag-box">도달 가능성 높음 · 97%</span><span class="tiny-grey">예상 23 · 남은 1</span></div>
+      <div class="ms-track"><div class="ms-fill" style="width:80.0%"></div></div>
+      <div class="ms-foot"><span class="tag-box">어려움 · 36%</span><span class="tiny-grey">예상 19 · 남은 4</span></div>
+    </div>
+    <div class="ms-row">
+      <div class="ms-head">
+        <span class="ms-label">박재현 150안타</span>
+        <span class="ms-val num">131 <span class="ms-target">/ 150</span></span>
+      </div>
+      <div class="ms-track"><div class="ms-fill" style="width:87.3%"></div></div>
+      <div class="ms-foot"><span class="tag-box">도달 가능성 높음 · 90%</span><span class="tiny-grey">예상 156 · 남은 19</span></div>
     </div>
     <div class="ms-row">
       <div class="ms-head">
@@ -531,11 +555,11 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
     </div>
     <div class="ms-row">
       <div class="ms-head">
-        <span class="ms-label">박재현 150안타</span>
-        <span class="ms-val num">131 <span class="ms-target">/ 150</span></span>
+        <span class="ms-label">박재현 20도루</span>
+        <span class="ms-val num">19 <span class="ms-target">/ 20</span></span>
       </div>
-      <div class="ms-track"><div class="ms-fill" style="width:87.3%"></div></div>
-      <div class="ms-foot"><span class="tag-box">도달 가능성 높음 · 90%</span><span class="tiny-grey">예상 156 · 남은 19</span></div>
+      <div class="ms-track"><div class="ms-fill" style="width:95.0%"></div></div>
+      <div class="ms-foot"><span class="tag-box">도달 가능성 높음 · 97%</span><span class="tiny-grey">예상 23 · 남은 1</span></div>
     </div>
     <div class="ms-row">
       <div class="ms-head">
@@ -575,7 +599,7 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
   </div>
   <div class="fp-grid">
     <div class="fp-card">
-      <div class="fp-head"><span class="fp-name">양현종</span><span class="pill-ink">선발</span></div>
+      <div class="fp-head"><span class="fp-photo-wrap"><img class="fp-photo" src="https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/77637.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span class="fp-photo-fallback" style="display:none">54</span></span><span class="fp-name">양현종</span><span class="pill-ink">선발</span></div>
       <div class="fp-sub tiny-grey">투수 · No.54 · 좌투좌타 · 38세</div>
       <div class="fp-line">ERA 4.25 · 10승 6패 · 0세이브 · 0홀드 · 106이닝 · 70탈삼진 · 53볼넷 · WHIP 1.44</div>
       <div class="fp-split">선발 22경기 ERA 4.25 (106이닝, 70/53)</div>
@@ -589,10 +613,10 @@ table.heat td.tot { text-align: right; padding: 3px 0 3px 12px; font-weight: 800
       <div class="ms-track"><div class="ms-fill" style="width:98.0%"></div></div>
       <div class="ms-foot"><span class="tag-box">어려움 · 14%</span><span class="tiny-grey">4승 남음 · 선발 약 9회 필요 (올 시즌 남은 5회) · 다음 시즌 초 유력</span></div>
     </div></div>
-      <div class="next-list"><div class="line"><span class="k">다음 등판 예상</span><span class="v">09/11 vs SSG <span class="tag-box">추정</span></span></div></div>
+      <div class="next-list"><div class="line"><span class="k">다음 등판 예상</span><span class="v">예상 어려움 <span class="tag-box">로테이션 불규칙</span></span></div></div>
     </div>
     <div class="fp-card">
-      <div class="fp-head"><span class="fp-name">이의리</span><span class="pill-red">마무리</span></div>
+      <div class="fp-head"><span class="fp-photo-wrap"><img class="fp-photo" src="https://6ptotvmi5753.edge.naverncp.com/KBO_IMAGE/person/middle/2026/51648.jpg" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span class="fp-photo-fallback" style="display:none">48</span></span><span class="fp-name">이의리</span><span class="pill-red">마무리</span></div>
       <div class="fp-sub tiny-grey">투수 · No.48 · 좌투좌타 · 24세</div>
       <div class="fp-line">ERA 7.52 · 2승 8패 · 4세이브 · 1홀드 · 52 2/3이닝 · 58탈삼진 · 45볼넷 · WHIP 1.86</div>
       <div class="fp-split">선발 10경기 ERA 9.42 (35 1/3이닝, 39/33)</div><div class="fp-split">구원 16경기 ERA 3.63 (17 1/3이닝, 19/12)</div>
